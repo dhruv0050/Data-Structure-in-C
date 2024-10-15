@@ -1,49 +1,60 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct node{
-    int value; 
-    int* next;
+struct node {
+    int value;
+    struct node* next;
 };
 
-void enqueue(struct node* f, struct node* r){
+// Enqueue operation
+void enqueue(struct node** f, struct node** r, int value) {
     struct node* n = (struct node*)malloc(sizeof(struct node));
-    if(n==NULL){
+    if (n == NULL) {
         printf("No More Memory can be allocated !\n");
-    }
-    else{
-        if(f==NULL){
-            f=r=n;
+    } else {
+        n->value = value;
+        n->next = NULL;
+        if (*f == NULL) {
+            *f = *r = n; 
+        } else {
+            (*r)->next = n;
+            *r = n;
         }
-        else{
-            r->next = n;
-            r=n;
-        }
+        printf("%d enqueued to queue\n", value);
     }
 }
 
-int dequeue(struct node*f, struct node* r){
+// Dequeue operation
+int dequeue(struct node** f) {
     int value = -1;
-    if(f==NULL){
-        printf("Stack Underflow !");
-    }
-    else{
-        struct node* ptr = f;
+    if (*f == NULL) {
+        printf("Queue Underflow!\n");
+    } else {
+        struct node* ptr = *f;
         value = ptr->value;
-        f=ptr->next;
+        *f = (*f)->next;
         free(ptr);
+        printf("%d dequeued from queue\n", value);
     }
     return value;
 }
 
-void traverse(struct node* front, struct node* rear){
-    while(front->next!=rear){
-        printf("Queue is: ");
-        printf("");
+// Traversing the queue
+void traverse(struct node* front) {
+    if (front == NULL) {
+        printf("Queue is empty\n");
+        return;
     }
+    printf("Queue elements are: ");
+    struct node* ptr = front;
+    while (ptr != NULL) {
+        printf("%d ", ptr->value);
+        ptr = ptr->next;
+    }
+    printf("\n");
 }
 
-int main(){
+int main() {
     struct node* front = NULL;
     struct node* rear = NULL;
 
@@ -60,17 +71,16 @@ int main(){
             case 1:
                 printf("Enter value to enqueue: ");
                 scanf("%d", &value);
-                enqueue(&q, value);
+                enqueue(&front, &rear, value);
                 break;
             case 2:
-                dequeue(&q);
+                dequeue(&front);
                 break;
             case 3:
-                traverse(&q);
+                traverse(front);
                 break;
             case 4:
                 printf("Exiting...\n");
-                free(q.arr);
                 return 0;
             default:
                 printf("Invalid choice! Please try again.\n");
